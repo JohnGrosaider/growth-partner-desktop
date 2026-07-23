@@ -19,25 +19,27 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
+        working-directory: GrowthPartnerEditTool_desktop
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
 
       - name: Download FFmpeg
+        working-directory: GrowthPartnerEditTool_desktop
         run: |
           curl -L "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" -o ffmpeg.zip
           7z x ffmpeg.zip -offmpeg_extracted
-          mkdir -p assets
           copy ffmpeg_extracted\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe assets\ffmpeg.exe
           copy ffmpeg_extracted\ffmpeg-master-latest-win64-gpl\bin\ffprobe.exe assets\ffprobe.exe
         shell: cmd
 
       - name: Build .exe
+        working-directory: GrowthPartnerEditTool_desktop
         run: pyinstaller build.spec
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: GrowthPartnerEditTool-Windows
-          path: dist/GrowthPartnerEditTool/
+          path: GrowthPartnerEditTool_desktop/dist/GrowthPartnerEditTool/
           retention-days: 30
