@@ -26,13 +26,17 @@ jobs:
 
       - name: Download FFmpeg
         working-directory: GrowthPartnerEditTool_desktop
+        shell: pwsh
         run: |
           curl -L "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" -o ffmpeg.zip
-          7z x ffmpeg.zip -offmpeg_extracted
-          for /r ffmpeg_extracted %%f in (ffmpeg.exe) do copy "%%f" assets\ffmpeg.exe
-          for /r ffmpeg_extracted %%f in (ffprobe.exe) do copy "%%f" assets\ffprobe.exe
-          dir assets\
-        shell: cmd
+          7z x ffmpeg.zip -offmpeg_extracted | Out-Null
+          New-Item -ItemType Directory -Force -Path assets | Out-Null
+          $ffmpeg = Get-ChildItem -Recurse -Filter "ffmpeg.exe" ffmpeg_extracted | Select-Object -First 1
+          $ffprobe = Get-ChildItem -Recurse -Filter "ffprobe.exe" ffmpeg_extracted | Select-Object -First 1
+          Copy-Item $ffmpeg.FullName assets\ffmpeg.exe
+          Copy-Item $ffprobe.FullName assets\ffprobe.exe
+          Write-Host "FFmpeg copied: $(Get-Item assets\ffmpeg.exe)"
+          Write-Host "FFprobe copied: $(Get-Item assets\ffprobe.exe)"
 
       - name: Build .exe
         working-directory: GrowthPartnerEditTool_desktop
